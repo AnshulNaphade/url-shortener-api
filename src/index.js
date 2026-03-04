@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const prisma = require('./utils/prisma');
+const authController = require('./controllers/authController');
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.get('/test-db', async (req, res) => {
     });
   }
 });
+
+app.post('/auth/register', authController.register);
+app.post('/auth/login', authController.login);
 
 const PORT = process.env.PORT || 3000;
 
