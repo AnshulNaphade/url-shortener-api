@@ -2,6 +2,8 @@ const express = require('express');
 const dotenv = require('dotenv');
 const prisma = require('./utils/prisma');
 const authController = require('./controllers/authController');
+const urlController = require('./controllers/urlController');
+const { requireAuth } = require('./middleware/auth');
 
 dotenv.config();
 
@@ -18,7 +20,7 @@ app.get('/test-db', async (req, res) => {
     const userCount = await prisma.user.count();
     res.json({ 
       message: 'Database connected successfully',
-      userCount: userCount 
+      userCount: userCount
     });
   } catch (error) {
     res.status(500).json({ 
@@ -30,6 +32,10 @@ app.get('/test-db', async (req, res) => {
 
 app.post('/auth/register', authController.register);
 app.post('/auth/login', authController.login);
+// URL routes
+app.post('/urls', requireAuth, urlController.createShortUrl);
+app.get('/urls/:shortCode/analytics', requireAuth, urlController.getAnalytics);
+app.get('/:shortCode', urlController.redirect);
 
 const PORT = process.env.PORT || 3000;
 
