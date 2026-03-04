@@ -35,6 +35,8 @@ app.post('/auth/login', authController.login);
 // URL routes
 app.post('/urls', requireAuth, urlController.createShortUrl);
 app.get('/urls/:shortCode/analytics', requireAuth, urlController.getAnalytics);
+
+app.get('/urls', requireAuth, urlController.getUserUrls);
 app.get('/:shortCode', urlController.redirect);
 
 const PORT = process.env.PORT || 3000;

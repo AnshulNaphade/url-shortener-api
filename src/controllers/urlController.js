@@ -113,3 +113,33 @@ exports.getAnalytics = async (req, res) => {
     res.status(500).json({ error: 'Failed to fetch analytics' });
   }
 };
+
+// LIST USER'S URLS
+exports.getUserUrls = async (req, res) => {
+  try {
+    const urls = await prisma.url.findMany({
+      where: { userId: req.user.userId },
+      include: {
+        _count: {
+          select: { clicks: true }
+        }
+      },
+      orderBy: { createdAt: 'desc' }
+    });
+
+    res.json({
+      count: urls.length,
+      urls: urls.map(url => ({
+        shortCode: url.shortCode,
+        shortUrl: `${process.env.BASE_URL}/${url.shortCode}`,
+        longUrl: url.longUrl,
+        clicks: url._count.clicks,
+        createdAt: url.createdAt
+      }))
+    });
+
+  } catch (error) {
+    console.error('Get URLs error:', error);
+    res.status(500).json({ error: 'Failed to fetch URLs' });
+  }
+};
